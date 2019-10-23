@@ -66,7 +66,6 @@
             return false;
         });
     }
-    var countdown=60;
     function query() {
         var userName = $("#userName").val();
         var idNo = $("#idNo").val();
@@ -96,7 +95,7 @@
 
         var reg =/^[\u4e00-\u9fa5]{2,4}$/;
         if(reg.test(userName)==false){
-            $.toast("未正确填写用户名","cancel");
+            $.toast("请输入真实姓名","cancel");
             return;
         }
 
@@ -135,6 +134,7 @@
             $("#query_button").addClass("weui-btn_disabled");
         }
     }
+    var countdown=60;
     function settime(obj) {
 
         var code = $(obj);

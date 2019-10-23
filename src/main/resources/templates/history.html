@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="module::head"></div>
+<body ontouchstart>
+<div class="page-hd">
+    <h1 class="page-hd-title">
+        历史查询结果
+    </h1>
+</div>
+<div class="weui-cells">
+    <a class="weui-cell weui-cell_access" href="javascript:;">
+        <div class="weui-cell__bd">
+            <p>信用良好</p>
+        </div>
+        <div class="weui-cell__ft">2019-10-23 08:08:00</div>
+    </a>
+    <a class="weui-cell weui-cell_access" href="javascript:;">
+        <div class="weui-cell__bd">
+            <p>建议拒绝</p>
+        </div>
+        <div class="weui-cell__ft">2018-08-23 08:08:00</div>
+    </a>
+</div>
+<div id="bottom-tab" class="weui-tab" style="height:auto;">
+    <div class="weui-tabbar tab-bottom">
+        <a href="/view/index" class="weui-tabbar__item">
+            <i class="icon icon-27 f27 weui-tabbar__icon"></i>
+            <p class="weui-tabbar__label">主页</p>
+        </a>
+
+        <a href="javascript:;" class="weui-tabbar__item">
+            <i class="icon icon-67 f27 weui-tabbar__icon f-green" ></i>
+            <p class="weui-tabbar__label f-green">查询历史</p>
+        </a>
+    </div>
+</div>
+</body>
+</html>

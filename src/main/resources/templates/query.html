@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="module::head"></div>
+<body ontouchstart>
+<div class="page-hd">
+    <h1 class="page-hd-title c_center">
+        个人征信查询
+    </h1>
+    <!--<div class="img-box">-->
+        <!--<img src="/img/img_banner_001.png">-->
+    <!--</div>-->
+</div>
+<div class="weui-cells weui-cells_form">
+    <form id="queryForm" method="post" action="/view/query-summit">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">姓名</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="userName" name="userName" placeholder="请输入真实姓名" type="text">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">身份证号</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="idNo" name="idNo" placeholder="请输入身份证号" type="text">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">信用卡号</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="creditCardNo" name="creditCardNo" placeholder="请输入信用卡号" type="number">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">手机号</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="phone" name="phone" placeholder="请输入手机号" type="number">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">验证码</label>
+            </div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="authCode" name="authCode" placeholder="验证码" type="number">
+            </div>
+            <div class="weui-cell__ft">
+                <button  class="weui-vcode-btn" onclick="settime(this)">获取验证码</button>
+            </div>
+        </div>
+    </form>
+</div>
+<label for="isAgree" class="weui-agree">
+    <input id="isAgree" class="weui-agree__checkbox" type="checkbox" onclick="checkChange()" checked>
+    <span class="weui-agree__text">
+                阅读并同意<a href="javascript:void(0);">《相关条款》</a>
+            </span>
+</label>
+<div class="weui-btn-area">
+    <button class="weui-btn weui-btn_primary" id="query_button" onclick="query()">查询</button>
+</div>
+<script>
+    window.onload=function(){
+        var text = "自愿查询，查询成功不予退款，姓名、身份证号、信用卡号、手机号仅用于查询报告，均经过加密处理，" +
+            "平台不会泄露您的信息，平台不提供放款业务。";
+        $.alert(text, "郑重声明",function () {
+            return false;
+        });
+    }
+    var countdown=60;
+    function query() {
+        var userName = $("#userName").val();
+        var idNo = $("#idNo").val();
+        var creditCardNo = $("#creditCardNo").val();
+        var phone = $("#phone").val();
+        var authCode = $("#authCode").val();
+        if(userName.length==0){
+            $.toast("用户名不能为空","cancel");
+            return;
+        }
+        if(idNo.length==0){
+            $.toast("身份证号不能为空","cancel");
+            return;
+        }
+        if(creditCardNo.length==0){
+            $.toast("信用卡号不能为空","cancel");
+            return;
+        }
+        if(phone.length==0){
+            $.toast("手机号不能为空","cancel");
+            return;
+        }
+        if(authCode.length==0){
+            $.toast("验证码不能为空","cancel");
+            return;
+        }
+
+        var reg =/^[\u4e00-\u9fa5]{2,4}$/;
+        if(reg.test(userName)==false){
+            $.toast("未正确填写用户名","cancel");
+            return;
+        }
+
+        var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+        if(reg.test(idNo)==false){
+            $.toast("身份证号输入不合法","cancel");
+            return;
+        }
+
+        if(creditCardNo.length<12||creditCardNo.length>19){
+            $.toast("信用卡号输入错误","cancel");
+            return;
+        }
+
+        var reg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
+        if(reg.test(phone)==false){
+            $.toast("请输入正确的手机号","cancel");
+            return;
+        }
+
+        if(authCode.length<4){
+            $.toast("验证码输入非法","cancel");
+            return;
+        }
+        $.showLoading();
+        $("#queryForm").submit();
+    }
+    function checkChange() {
+        var check = $("#isAgree").prop("checked");
+        console.log(check);
+        if(check){
+            $("#query_button").removeAttr("disabled");
+            $("#query_button").removeClass("weui-btn_disabled");
+        }else {
+            $("#query_button").attr("disabled","disabled");
+            $("#query_button").addClass("weui-btn_disabled");
+        }
+    }
+    function settime(obj) {
+
+        var code = $(obj);
+        if (countdown == 0) {
+            code.removeAttr('disabled');
+            code.text("获取验证码");
+            countdown =60;
+            return;
+        } else {
+            code.text("重新发送(" + countdown + ")");
+            code.attr('disabled',true);
+            countdown--;
+        }
+        setTimeout(function() {
+            settime(obj) }, 1000);
+
+    }
+
+    $(function(){
+        //解决表单控件不能回弹 只有微信ios有这个问题
+        $("input,select,textarea").blur(function(){
+            setTimeout(() => {
+                const scrollHeight = document.documentElement.scrollTop || document.body.scrollTop || 0;
+            window.scrollTo(0, Math.max(scrollHeight - 1, 0));
+        }, 100);
+        })
+
+    });
+
+
+</script>
+</body>
+</html>

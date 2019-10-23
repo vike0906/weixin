@@ -18,7 +18,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.sxzq.monitor" level="INFO"/>
+    <logger name="com.sxzq.weixin" level="INFO"/>
 
     <!-- 日志输出级别 -->
     <root level="INFO">

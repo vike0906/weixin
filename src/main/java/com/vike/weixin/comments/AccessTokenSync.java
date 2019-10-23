@@ -32,6 +32,7 @@ public class AccessTokenSync implements ApplicationListener<ApplicationReadyEven
         return null;
     }
 
+
     private synchronized AccessToken getAccessToken(String appId, String appSecret) {
 
         String url = String.format(GlobalConstant.ACCESS_TOKEN_URL, appId, appSecret);

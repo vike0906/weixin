@@ -26,6 +26,8 @@ public class WxMessage {
     private String msgType;
     @XmlElement(name = "Content")
     private String content;
+    @XmlElement(name = "Event")
+    private String event;
     @XmlElement(name = "MsgId")
     private String msgId;
 

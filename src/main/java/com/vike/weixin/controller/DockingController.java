@@ -1,9 +1,12 @@
 package com.vike.weixin.controller;
 
 import com.vike.weixin.comments.AccessTokenSync;
+import com.vike.weixin.entity.Fans;
 import com.vike.weixin.pojo.WxMessage;
+import com.vike.weixin.service.FansService;
 import com.vike.weixin.utils.EncryUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXB;
 import java.io.*;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Optional;
 
 /**
  * @author: lsl
@@ -21,6 +26,9 @@ import java.util.Arrays;
 @RestController
 @Slf4j
 public class DockingController {
+
+    @Autowired
+    FansService fansService;
 
     @GetMapping("wx")
     public String wx(@RequestParam(required = false)String signature,
@@ -62,19 +70,40 @@ public class DockingController {
             WxMessage wxMessage = JAXB.unmarshal(inputStream, WxMessage.class);
             StringWriter sw = new StringWriter();
             JAXB.marshal(wxMessage, sw);
-            log.debug("接收到消息：{}", sw.toString());
-
+            log.info("接收到消息：{}", sw.toString());
             String formUser = wxMessage.getFromUserName();
             String toUser = wxMessage.getToUserName();
-
+            StringWriter swr = new StringWriter();
+            if("event".equals(wxMessage.getMsgType())){
+                wxMessage.setMsgType("text");
+                wxMessage.setContent("欢迎关注PA！一秒查询征信信息。");
+                Date currentTime = new Date(System.currentTimeMillis());
+                if("subscribe".equals(wxMessage.getEvent())){
+                    Fans fans = new Fans();
+                    Optional<Fans> optional = fansService.findByOpenId(wxMessage.getFromUserName());
+                    if(optional.isPresent()){
+                        fans = optional.get();
+                        fans.setIsSubscribe(1).setUpdateTime(currentTime);
+                    }else {
+                        fans.setOpenId(wxMessage.getFromUserName()).setIsSubscribe(1).setIsCollectInfo(1).setUpdateTime(currentTime);
+                    }
+                    fansService.saveFans(fans);
+                }else if("unsubscribe".equals(wxMessage.getEvent())){
+                    Optional<Fans> optional = fansService.findByOpenId(wxMessage.getFromUserName());
+                    if(optional.isPresent()){
+                        Fans fans = optional.get();
+                        fans.setIsSubscribe(2).setUpdateTime(currentTime);
+                        fansService.saveFans(fans);
+                    }
+                }
+            }else {
+                wxMessage.setContent("您好");
+            }
             wxMessage.setFromUserName(toUser);
             wxMessage.setToUserName(formUser);
-            wxMessage.setContent("您好");
             wxMessage.setCreateTime(String.valueOf(System.currentTimeMillis()));
-            StringWriter swr = new StringWriter();
             JAXB.marshal(wxMessage, swr);
-            log.debug("回复的消息：{}", swr.toString());
-
+            log.info("回复的消息：{}", swr.toString());
             return swr.toString();
         }catch (Exception e){
             e.printStackTrace();
@@ -86,5 +115,7 @@ public class DockingController {
     public String wx(){
         return AccessTokenSync.getAccessToken();
     }
+
+    /**获取用户基础信息*/
 
 }

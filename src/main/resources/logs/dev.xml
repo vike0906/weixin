@@ -18,7 +18,7 @@
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
-    <logger name="com.vike.spider" level="INFO"/>
+    <logger name="com.vike.weixin" level="INFO"/>
     <!-- 输出hibernateSQL -->
     <logger name="org.hibernate.engine.QueryParameters" level="DEBUG"/>
     <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG"/>

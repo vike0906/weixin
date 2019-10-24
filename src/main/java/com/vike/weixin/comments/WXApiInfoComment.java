@@ -26,9 +26,9 @@ import java.util.Optional;
 @Component
 public class WXApiInfoComment {
 
-    @Value("${system.app_id:app_id}")
+    @Value("${system.wx.app_id:app_id}")
     private String APP_ID;
-    @Value("${system.app_secret:app_secret}")
+    @Value("${system.wx.app_secret:app_secret}")
     private String APP_SECRET;
     @Autowired
     FansService fansService;
@@ -44,21 +44,14 @@ public class WXApiInfoComment {
      * https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxf0e81c3bee622d60&redirect_uri=http%3A%2F%2Fnba.bluewebgame.com%2Foauth_response.php&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
      */
     public String getUrlWithAuthorize(String url, String state){
-        StringBuffer sb = new StringBuffer(GlobalConstant.WEIXIN_API);
-        sb.append("/connect/oauth2/authorize?appid=");
-        sb.append(APP_ID);
-        sb.append("&redirect_uri=");
         try {
             url = URLEncoder.encode(url,"UTF-8");
-            sb.append(url);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        sb.append("&response_type=code&scope=snsapi_userinfo&state=");
-        sb.append(state);
-        sb.append("#wechat_redirect");
-        log.info("组装链接为：{}",sb.toString());
-        return sb.toString();
+        String menuUrl = String.format(GlobalConstant.CODE_MENU_URL, APP_ID, url, state);
+        log.info("组装链接为：{}", menuUrl);
+        return menuUrl;
     }
 
 
@@ -111,8 +104,8 @@ public class WXApiInfoComment {
 
         Gson gson = new Gson();
         FansInfo fansInfo = gson.fromJson(result, FansInfo.class);
-
-        fansInfo.setFansId(fansId);
+        String privilegeStr = gson.toJson(fansInfo.getPrivilege());
+        fansInfo.setFansId(fansId).setPrivilegeStr(privilegeStr);
         fansInfo.setCreateTime(new Date(System.currentTimeMillis()));
 
         fansService.saveFansInfo(fansInfo);

@@ -17,5 +17,9 @@ logging:
   config: classpath:logs/dev.xml
 
 system:
-  app_id: wxe4d7a76e1414928a
-  app_secret: 09496ecd52c61b453f8f96183d862acf
+  wx:
+    app_id: wxe4d7a76e1414928a
+    app_secret: 09496ecd52c61b453f8f96183d862acf
+  hp:
+    app_id: app_id
+    app_secret: app_secret

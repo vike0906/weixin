@@ -21,9 +21,22 @@ public class GlobalConstant {
     /**删除菜单链接*/
     public static final String DELETE_MENU_URL = "https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=%s";
 
+    /**改造菜单，获取code*/
+    public static final String CODE_MENU_URL = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_userinfo&state=%s#wechat_redirect";
+
     /**获取网页AccessToken链接*/
     public static final String WEB_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
 
     /**通过AccessToken拉取用户信息链接*/
     public static final String COLLECT_INFO_URL = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN";
+
+
+    /**黑核科技短信验证码获取*/
+    public static final String HP_AUTH_SMS = "http://api.hihippo.cn/api/authorizedSms";
+
+    /**黑核科技短信验证码校验*/
+    public static final String HP_AUTH_SMS_CHECK = "http://api.hihippo.cn/api/authorizedSmsCheck";
+
+    /**黑核科技查询征信结果*/
+    public static final String HP_REPORT_CARD_NO_DATA = "http://api.hihippo.cn/api/reportCardNoData";
 }

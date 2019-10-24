@@ -24,34 +24,60 @@ public class ViewController {
 
     @GetMapping("index")
     public String index(ModelMap modelMap, @RequestParam(required = false) String code, @RequestParam(required = false) Integer state){
-        /**获取OpenId，即用户身份信息*/
-        long fansId = wxApiInfoComment.getFansIdByCode(code);
+        long fansId = code2FansId(code);
         modelMap.addAttribute("fansId",fansId);
         return "index";
     }
 
     @GetMapping("history")
-    public String history(){
+    public String history(ModelMap modelMap, @RequestParam(required = false) String code, @RequestParam(required = false) Integer state){
+        long fansId = code2FansId(code);
+        modelMap.addAttribute("fansId",fansId);
         return "history";
     }
 
     @GetMapping("invite")
-    public String invite(){
+    public String invite(ModelMap modelMap, @RequestParam(required = false) String code, @RequestParam(required = false) Integer state){
+        long fansId = code2FansId(code);
+        modelMap.addAttribute("fansId",fansId);
         return "invite";
     }
 
     @GetMapping("query")
-    public String query(){
+    public String query(ModelMap modelMap, @RequestParam(required = false) Long fansId){
+        if(fansId==null){
+            fansId = -1L;
+        }
+        modelMap.addAttribute("fansId",fansId);
         return "query";
     }
 
+    @GetMapping("agreement")
+    public String agreement(){
+        return "agreement";
+    }
+
     @PostMapping("query-summit")
-    public String query(@RequestParam String userName,
+    public String query(ModelMap modelMap,
+                        @RequestParam(required = false) Long fansId,
+                        @RequestParam String userName,
                         @RequestParam String idNo,
                         @RequestParam String creditCardNo,
                         @RequestParam String phone,
                         @RequestParam String authCode){
         log.info("传递值：{} {} {} {} {}", userName, idNo, creditCardNo, phone, authCode);
+        if(fansId==null){
+            fansId = -1L;
+        }
+        modelMap.addAttribute("fansId",fansId);
         return "result";
+    }
+
+    private long code2FansId(String code){
+        long fansId = -1L;
+        if(code!=null&&!"".equals(code)){
+            fansId = wxApiInfoComment.getFansIdByCode(code);
+        }
+        return fansId;
     }
 }

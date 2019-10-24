@@ -3,15 +3,19 @@
 <div th:replace="module::head"></div>
 <body ontouchstart class="page-bg">
 <div class="page-hd">
-    <h1 class="page-hd-title">
-        征信查询系统
-    </h1>
-    <p class="page-hd-desc">
-        一款基于微信公众号的征信查询系统
-    </p>
-    <p class="page-hd-desc" th:text="${fansId}"></p>
+    <!--<h1 class="page-hd-title">-->
+        <!--征信查询系统-->
+    <!--</h1>-->
+    <!--<p class="page-hd-desc">-->
+        <!--一款基于微信公众号的征信查询系统-->
+    <!--</p>-->
+    <!--<p class="page-hd-desc" th:text="'客户ID:'+${fansId}"></p>-->
+    <div class="img-box">
+        <img src="/img/banner01.png" style="max-width: 100%;  height: auto;">
+    </div>
 </div>
-<div class="page-bd">
+<div class="weui-loadmore weui-loadmore_line weui-loadmore_dot" style="width: 100%;margin-top: 0px"></div>
+<div class="page-bd-10">
     <div class="weui-panel weui-panel_access">
         <div class="weui-panel__hd">查询入口</div>
         <div class="weui-panel__bd">
@@ -23,6 +27,19 @@
                     <h2 class="weui-media-box__title">开始查询</h2>
                 </div>
             </a>
+        </div>
+    </div>
+</div>
+<div class="weui-loadmore weui-loadmore_line weui-loadmore_dot" style="width: 100%"></div>
+<div class="page-bd-10">
+    <div class="weui-panel weui-panel_access">
+        <!--<div class="weui-panel__hd">文字组合列表</div>-->
+        <div class="weui-panel__bd">
+            <div class="weui-media-box weui-media-box_text">
+                <h4 class="weui-media-box__title">友情提示</h4>
+                <p class="weui-media-box__desc">1.本平台不提供央行征信和个人爬虫等隐私数据查询。</p>
+                <p class="weui-media-box__desc">2.切勿相信他人以优化征信，保证下款，提高信用额度等为手段骗取钱财</p>
+            </div>
         </div>
     </div>
 </div>
@@ -39,7 +56,7 @@
         </a>
     </div>
 </div>
-<script>
+<!--<script>
     window.onload=function(){
         var text = "本平台不提供央行征信和个人爬虫等隐私数据查询。" +
             "切勿相信他人以优化征信，保证下款，提高信用额度等为手段骗取钱财";
@@ -47,6 +64,6 @@
             return false;
         });
     }
-</script>
+</script>-->
 </body>
 </html>

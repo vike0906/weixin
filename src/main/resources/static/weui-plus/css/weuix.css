@@ -209,8 +209,14 @@ a:active {
 .page-bd-15{
     padding: 0 15px;
 }
+.page-bd-10{
+    padding: 0 10px;
+}
+.page-bd-5{
+    padding: 0 5px;
+}
 .page-hd{
-    padding: 20px;
+    padding: 10px;
 }
 .page-bd{
     padding:0;
@@ -374,6 +380,7 @@ a:active {
     color: #888888;
     text-align: left;
     font-size: 14px;
+    text-indent:2rem;
 }
 
 /*表格样式*/

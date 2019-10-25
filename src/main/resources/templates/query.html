@@ -213,10 +213,10 @@
             if(response.code == 0){
                 // 成功
                 $("#orderNo").val(response.data);
-                $.toast.prototype.defaults.duration=1000;//1秒
                 $.toast("验证短信已发送",'success');
             }else {
                 //失败
+                $.toast.prototype.defaults.duration=2000;//2秒
                 $.toast("验证短信获取失败，请稍后重试","cancel");
                 return;
             }

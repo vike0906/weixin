@@ -10,20 +10,22 @@ import java.util.Map;
  * @author: lsl
  * @createDate: 2019/10/24
  */
-public class HihippoSign {
+public class HihippoHelp {
 
     private static final char[] base64EncodeChars = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/' };
 
-    public static String value(Map<String, String> params, String app_secret)
-    {
-        try
-        {
+    private static final String MAC_NAME = "HmacSHA1";
+
+    private static final String ENCODING = "UTF-8";
+
+    public static String sign(Map<String, String> params, String app_secret){
+        try{
             StringBuffer sb = new StringBuffer();
             params.entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())
                     .forEachOrdered(a->sb.append("&").append(a.getKey()).append("=").append(a.getValue()));
             byte[] hmacSHA1Bytes = hmacSHA1Encrypt(sb.toString().substring(1), app_secret);
-            return URLEncoder.encode(encryptBASE64(hmacSHA1Bytes), "UTF-8");
+            return URLEncoder.encode(base64Encode(hmacSHA1Bytes), ENCODING);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -31,18 +33,12 @@ public class HihippoSign {
     }
 
     private static byte[] hmacSHA1Encrypt(String encryptText, String encryptKey) throws Exception {
-        String MAC_NAME = "HmacSHA1";
-        String ENCODING = "UTF-8";
         byte[] data = encryptKey.getBytes(ENCODING);
         SecretKey secretKey = new SecretKeySpec(data, MAC_NAME);
         Mac mac = Mac.getInstance(MAC_NAME);
         mac.init(secretKey);
         byte[] text = encryptText.getBytes(ENCODING);
         return mac.doFinal(text);
-    }
-
-    private static String encryptBASE64(byte[] key) throws Exception {
-        return new String(base64Encode(key));
     }
 
     private static String base64Encode(byte[] data) {

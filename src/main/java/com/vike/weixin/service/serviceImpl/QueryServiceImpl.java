@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.vike.weixin.common.GlobalConstant;
-import com.vike.weixin.common.HihippoSign;
+import com.vike.weixin.common.HihippoHelp;
+import com.vike.weixin.common.LocalCache;
+import com.vike.weixin.common.OrderHelp;
+import com.vike.weixin.pojo.VerificationCodeRequest;
 import com.vike.weixin.service.QueryService;
 import com.vike.weixin.utils.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +31,7 @@ public class QueryServiceImpl implements QueryService {
     private String APP_SECRET;
 
     @Override
-    public Integer gainVerificationCode(String name, String idCard, String bankCard, String mobile) {
+    public String gainVerificationCode(long fansId, String name, String idCard, String bankCard, String mobile) {
 
         Map<String,String> paramsMap = new HashMap<>();
         paramsMap.put("account", APP_ID);
@@ -36,8 +39,9 @@ public class QueryServiceImpl implements QueryService {
         paramsMap.put("idCard", idCard);
         paramsMap.put("mobile", mobile);
         paramsMap.put("name", name);
-        paramsMap.put("orderNo", "0000");
-        String sign = HihippoSign.value(paramsMap,APP_SECRET);
+        String orderNo = OrderHelp.createOrderNo();
+        paramsMap.put("orderNo", orderNo);
+        String sign = HihippoHelp.sign(paramsMap,APP_SECRET);
         log.info("构造sign:{}",sign);
         paramsMap.put("sign", sign);
 
@@ -50,26 +54,33 @@ public class QueryServiceImpl implements QueryService {
         if(data!=null){
             String serialNumber = data.getAsJsonPrimitive("serialNumber").getAsString();
             log.info("解析返回结果获得serialNumber：{}",serialNumber);
-            return 1;
+            VerificationCodeRequest vc = new VerificationCodeRequest();
+            vc.setFansId(fansId).setOrderNo(orderNo).setSerialNumber(serialNumber)
+                    .setRealName(name).setIdNO(idCard).setCreditCardNo(bankCard).setPhone(mobile);
+            LocalCache.putVerificationCodeRequest(orderNo,vc);
+            return orderNo;
         }
         log.info("返回结果解析失败");
-        return -1;
+        return null;
     }
 
     /**
-     *  1:校验成功
-     * -1:未通过校验
-     * -2:返回status异常
-     * -3:返回结果解析失败
+     * 1:校验成功
+     * 2:未通过校验
+     * 3:验证码过期
+     * 4:返回status异常
+     * 5:返回结果解析失败
      */
     @Override
-    public Integer checkVerificationCode(String code) {
+    public Integer checkVerificationCode(String orderNo, String code) {
+
         Map<String,String> paramsMap = new HashMap<>();
+        VerificationCodeRequest vc = LocalCache.getVerificatonCodeRequest(orderNo);
         paramsMap.put("account", APP_ID);
         paramsMap.put("identifyingCode", code);
-        paramsMap.put("orderNo", "0000");
-        paramsMap.put("serialNumber", "1017248584260968449");
-        String sign = HihippoSign.value(paramsMap,APP_SECRET);
+        paramsMap.put("orderNo", orderNo);
+        paramsMap.put("serialNumber", vc.getSerialNumber());
+        String sign = HihippoHelp.sign(paramsMap,APP_SECRET);
         log.info("构造sign:{}",sign);
         paramsMap.put("sign", sign);
 
@@ -83,29 +94,36 @@ public class QueryServiceImpl implements QueryService {
             int status = data.getAsJsonPrimitive("status").getAsInt();
             if(status==0){
                 log.info("验证码{}过期",code);
+                return 3;
             }else if(status==1){
                 boolean isConsistent = data.getAsJsonPrimitive("isConsistent").getAsBoolean();
-                return isConsistent ? 1 : -1;
+                if(isConsistent){
+                    //TODO 创建订单并写入数据库
+
+                    return 1;
+                }
+                return 2;
             }
             log.info("返回status异常");
-            return -2;
+            return 4;
         }
         log.info("返回结果解析失败");
-        return -3;
+        return 5;
     }
 
     @Override
-    public String queryCardData(String name, String idCard, String bankCard, String mobile, String code) {
+    public String queryCardData(String name, String idCard, String bankCard, String mobile, String code, String orderNo) {
         Map<String,String> paramsMap = new HashMap<>();
+        VerificationCodeRequest vc = LocalCache.getVerificatonCodeRequest(orderNo);
         paramsMap.put("account", APP_ID);
         paramsMap.put("bankCard", bankCard);
         paramsMap.put("idCard", idCard);
         paramsMap.put("identifyingCode", code);
         paramsMap.put("mobile", mobile);
         paramsMap.put("name", name);
-        paramsMap.put("orderNo", "0000");
-        paramsMap.put("serialNumber", "1017248584260968449");
-        String sign = HihippoSign.value(paramsMap,APP_SECRET);
+        paramsMap.put("orderNo", orderNo);
+        paramsMap.put("serialNumber", vc.getSerialNumber());
+        String sign = HihippoHelp.sign(paramsMap,APP_SECRET);
         log.info("构造sign:{}",sign);
         paramsMap.put("sign", sign);
 

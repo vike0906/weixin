@@ -7,14 +7,14 @@ package com.vike.weixin.service;
 public interface QueryService {
 
     /**获取验证码*/
-    Integer gainVerificationCode(String name, String idCard, String bankCard, String mobile);
+    String gainVerificationCode(long fansId, String name, String idCard, String bankCard, String mobile);
 
 
     /**验证码校验*/
-    Integer checkVerificationCode(String code);
+    Integer checkVerificationCode(String orderNo, String code);
 
     /**查询结果*/
-    String queryCardData(String name, String idCard, String bankCard, String mobile, String code);
+    String queryCardData(String name, String idCard, String bankCard, String mobile, String code, String orderNo);
 
     /**全部查询结果*/
 }

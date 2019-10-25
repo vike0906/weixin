@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AccessTokenSync implements ApplicationListener<ApplicationReadyEvent> {
 
-    @Value("${system.app_id:app_id}")
+    @Value("${system.wx.app_id:app_id}")
     private String APP_ID;
-    @Value("${system.app_secret:app_secret}")
+    @Value("${system.wx.app_secret:app_secret}")
     private String APP_SECRET;
 
     private static AccessToken accessToken= null;

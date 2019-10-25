@@ -830,7 +830,12 @@
         className = className || "";
         var mask = $("<div class='weui-mask_transparent'></div>").appendTo(document.body);
 
-        var tpl = '<div class="weui-toast ' + className + '">' + html + '</div>';
+        var tpl = '';
+        if(className == 'weui_loading_toast'){
+            tpl = '<div class="weui-toast ' + className + '" style="min-height: 6.1rem">' + html + '</div>';
+        }else{
+            tpl = '<div class="weui-toast ' + className + '">' + html + '</div>';
+        }
         var dialog = $(tpl).appendTo(document.body);
 
         dialog.addClass("weui-toast--visible");
@@ -874,7 +879,9 @@
         var html = '<div class="weui_loading">';
         html += '<i class="weui-loading weui-icon_toast"></i>';
         html += '</div>';
-        html += '<p class="weui-toast_content">' + (text || "数据加载中") + '</p>';
+        if(text!=null){
+            html += '<p class="weui-toast_content">' + text + '</p>';
+        }
         show(html, 'weui_loading_toast');
     }
 

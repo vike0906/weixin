@@ -8,7 +8,7 @@
     <!--</h1>-->
     <!--<p class="page-hd-desc" th:text="'客户ID:'+${fansId}"></p>-->
     <div class="img-box">
-        <!--<img src="/img/banner01.png" style="max-width: 100%;  height: auto;">-->
+        <img src="/img/banner01.png" style="max-width: 100%;  height: auto;">
     </div>
 </div>
 <div class="page-bd-10">
@@ -60,7 +60,7 @@
         </span>
     </div>
     <div class="weui-btn-area">
-        <button class="weui-btn weui-btn_primary" id="query_button" onclick="query()">查询</button>
+        <button class="weui-btn weui-btn_primary" id="query_button" onclick="checkVerificationCode()">查询</button>
     </div>
 </div>
 <div class="weui-loadmore weui-loadmore_line weui-loadmore_dot" style="width: 100%"></div>
@@ -88,12 +88,42 @@
     //         return false;
     //     });
     // }
+    function checkVerificationCode() {
+        baseQuery();
+
+        var orderNo = $("#orderNo").val();
+        var authCode = $("#authCode").val();
+        if(authCode.length==0){
+            $.toast("验证码不能为空","cancel");
+            return;
+        }
+        if(authCode.length!=6){
+            $.toast("验证码格式错误","cancel");
+            return;
+        }
+
+        var params = {orderNo:orderNo, code:authCode};
+        $.showLoading();
+        $.post('/query/check', params, function (response) {
+            $.hideLoading();
+            if(response.code == 1){
+                // 发起支付
+                $.toast.prototype.defaults.duration=1000;//1秒
+                $.toast(response.data,'success');
+            }else {
+                //失败
+                $.toast(response.data, "cancel");
+                return;
+            }
+        });
+
+    }
     function baseQuery() {
         var userName = $("#userName").val();
         var idNo = $("#idNo").val();
         var creditCardNo = $("#creditCardNo").val();
         var phone = $("#phone").val();
-        var authCode = $("#authCode").val();
+
         if(userName.length==0){
             $.toast("用户名不能为空","cancel");
             return 1;
@@ -110,10 +140,7 @@
             $.toast("手机号不能为空","cancel");
             return 1;
         }
-        /**if(authCode.length==0){
-            $.toast("验证码不能为空","cancel");
-            return;
-        }*/
+
 
         var reg =/^[\u4e00-\u9fa5]{2,4}$/;
         if(reg.test(userName)==false){
@@ -151,13 +178,13 @@
             $("#query_button").addClass("weui-btn_disabled");
         }
     }
-    var count = 60;
+    var count = 5;
     function countdown(obj) {
         var code = $(obj);
         if(count == 0){
             code.removeAttr('disabled');
             code.text("获取验证码");
-            count =60;
+            count =5;
             return;
         }else{
             code.text("重新发送(" + count + ")");
@@ -168,7 +195,6 @@
             countdown(obj)}, 1000);
     }
     function gainVerificationCode(obj) {
-
         /**检查参数*/
         var resp = baseQuery();
         if(resp == 1){
@@ -181,34 +207,26 @@
         var phone = $("#phone").val();
         var fansId = $("#fansId").val();
         var params = {fansId:fansId, userName:userName, idNo:idNo, creditCardNo:creditCardNo, phone:phone};
+        $.showLoading();
         $.post('/query/gain', params, function (response) {
-            if(response.code = 0){
+            $.hideLoading();
+            if(response.code == 0){
                 // 成功
                 $("#orderNo").val(response.data);
                 $.toast.prototype.defaults.duration=1000;//1秒
-                $.toast("验证短信已发送",'text');
+                $.toast("验证短信已发送",'success');
             }else {
                 //失败
                 $.toast("验证短信获取失败，请稍后重试","cancel");
+                return;
             }
         });
 
         /**获取按钮倒计时*/
         countdown(obj);
-
-
     }
 
-    $(function(){
-        //解决表单控件不能回弹 只有微信ios有这个问题
-        $("input,select,textarea").blur(function(){
-            setTimeout(() => {
-                const scrollHeight = document.documentElement.scrollTop || document.body.scrollTop || 0;
-            window.scrollTo(0, Math.max(scrollHeight - 1, 0));
-        }, 100);
-        })
 
-    });
 
 
 

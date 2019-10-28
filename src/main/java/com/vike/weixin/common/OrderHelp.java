@@ -16,7 +16,10 @@ public class OrderHelp {
 
     private static final SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-    private static final DecimalFormat df = new DecimalFormat("0000");
+    /**
+     * 当前系统使用1位标识顺序，支持10000的并发，取消原4位顺序标识位
+     * private static final DecimalFormat df = new DecimalFormat("0000");
+     * */
 
 
     public synchronized static String createOrderNo(){
@@ -30,7 +33,7 @@ public class OrderHelp {
             COUNT = 1;
         }
 
-        return sd.format(new Date(currentTimeMillis))+df.format(COUNT);
+        return sd.format(new Date(currentTimeMillis))+COUNT;
     }
 
     public static void main(String [] args){

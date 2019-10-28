@@ -67,5 +67,13 @@ public class QueryController {
         return new Response(Response.SUCCESS, url);
     }
 
+    /**发起支付，获取预付单信息*/
+    //TODO 下单
+
+    /**查询支付结果*/
+    //TODO 十秒内多次查询
+
+    /**验证通过，查询并返回查询结果*/
+
     /**全部查询结果*/
 }

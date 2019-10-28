@@ -81,35 +81,61 @@
 </div>
 
 <script>
-    // window.onload=function(){
-    //     var text = "自愿查询，查询成功不予退款，姓名、身份证号、信用卡号、手机号仅用于查询报告，均经过加密处理，" +
-    //         "平台不会泄露您的信息，平台不提供放款业务。";
-    //     $.alert(text, "郑重声明",function () {
-    //         return false;
-    //     });
-    // }
+
+    function onBridgeReady(){
+        WeixinJSBridge.invoke(
+            'getBrandWCPayRequest', {
+                "appId":"wx2421b1c4370ec43b",     //公众号名称，由商户传入
+                "timeStamp":"1395712654",         //时间戳，自1970年以来的秒数
+                "nonceStr":"e61463f8efa94090b1f366cccfbbb444", //随机串
+                "package":"prepay_id=u802345jgfjsdfgsdg888",
+                "signType":"MD5",         //微信签名方式：
+                "paySign":"70EA570631E4BB79628FBCA90534C63FF7FADD89" //微信签名
+            },
+            function(res){
+                if(res.err_msg == "get_brand_wcpay_request:ok" ){
+                    // 使用以上方式判断前端返回,微信团队郑重提示：
+                    //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                    //TODO 支付成功后开始查询业务，并展示查询结果
+                }
+            });
+    }
+    if (typeof WeixinJSBridge == "undefined"){
+        if( document.addEventListener ){
+            document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+        }else if (document.attachEvent){
+            document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+            document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+        }
+    }else{
+        onBridgeReady();
+    }
+
     function checkVerificationCode() {
-        baseQuery();
+
+        var resp = baseQuery();
+        if(resp == 1){
+            return;
+        }
 
         var orderNo = $("#orderNo").val();
         var authCode = $("#authCode").val();
-        if(authCode.length==0){
-            $.toast("验证码不能为空","cancel");
+        if(orderNo.length!=18){
+            $.toast("请先获取验证码","cancel");
             return;
         }
-        if(authCode.length!=6){
-            $.toast("验证码格式错误","cancel");
+        if(authCode.length==0||authCode.length!=6){
+            $.toast(authCode.length==0?"验证码不能为空":"验证码格式错误","cancel");
             return;
         }
 
         var params = {orderNo:orderNo, code:authCode};
-        $.showLoading();
-        $.post('/query/check', params, function (response) {
+        ajaxPost('/query/check', params, function (response) {
             $.hideLoading();
             if(response.code == 1){
-                // 发起支付
-                $.toast.prototype.defaults.duration=1000;//1秒
                 $.toast(response.data,'success');
+                //TODO 获取appId，timeStamp，nonceStr， package， signType， paySign 发起支付
+                //
             }else {
                 //失败
                 $.toast(response.data, "cancel");
@@ -117,6 +143,35 @@
             }
         });
 
+    }
+    function gainVerificationCode(obj) {
+
+        var resp = baseQuery();
+        if(resp == 1){
+            return;
+        }
+
+        var userName = $("#userName").val();
+        var idNo = $("#idNo").val();
+        var creditCardNo = $("#creditCardNo").val();
+        var phone = $("#phone").val();
+        var fansId = $("#fansId").val();
+        var params = {fansId:fansId, userName:userName, idNo:idNo, creditCardNo:creditCardNo, phone:phone};
+        ajaxPost('/query/gain', params, function (response) {
+            $.hideLoading();
+            if(response.code == 0){
+                // 成功
+                $("#orderNo").val(response.data);
+                $.toast("验证短信已发送",'success');
+            }else {
+                //失败
+                $.toast.prototype.defaults.duration=2000;//2秒
+                $.toast("验证短信获取失败，请稍后重试","cancel");
+                return;
+            }
+        });
+
+        countdown(obj);
     }
     function baseQuery() {
         var userName = $("#userName").val();
@@ -194,42 +249,6 @@
         setTimeout(function() {
             countdown(obj)}, 1000);
     }
-    function gainVerificationCode(obj) {
-        /**检查参数*/
-        var resp = baseQuery();
-        if(resp == 1){
-            return;
-        }
-        /**ajax请求接口*/
-        var userName = $("#userName").val();
-        var idNo = $("#idNo").val();
-        var creditCardNo = $("#creditCardNo").val();
-        var phone = $("#phone").val();
-        var fansId = $("#fansId").val();
-        var params = {fansId:fansId, userName:userName, idNo:idNo, creditCardNo:creditCardNo, phone:phone};
-        $.showLoading();
-        $.post('/query/gain', params, function (response) {
-            $.hideLoading();
-            if(response.code == 0){
-                // 成功
-                $("#orderNo").val(response.data);
-                $.toast("验证短信已发送",'success');
-            }else {
-                //失败
-                $.toast.prototype.defaults.duration=2000;//2秒
-                $.toast("验证短信获取失败，请稍后重试","cancel");
-                return;
-            }
-        });
-
-        /**获取按钮倒计时*/
-        countdown(obj);
-    }
-
-
-
-
-
 </script>
 </body>
 </html>

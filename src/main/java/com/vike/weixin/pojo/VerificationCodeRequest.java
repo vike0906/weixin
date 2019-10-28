@@ -15,7 +15,7 @@ public class VerificationCodeRequest {
 
     private long fansId;
 
-    private String orderNo;
+    private long orderNo;
 
     private String serialNumber;
 

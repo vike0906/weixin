@@ -55,9 +55,10 @@ public class QueryServiceImpl implements QueryService {
             String serialNumber = data.getAsJsonPrimitive("serialNumber").getAsString();
             log.info("解析返回结果获得serialNumber：{}",serialNumber);
             VerificationCodeRequest vc = new VerificationCodeRequest();
-            vc.setFansId(fansId).setOrderNo(orderNo).setSerialNumber(serialNumber)
+            Long orderNoLong = Long.valueOf(orderNo);
+            vc.setFansId(fansId).setOrderNo(orderNoLong).setSerialNumber(serialNumber)
                     .setRealName(name).setIdNO(idCard).setCreditCardNo(bankCard).setPhone(mobile);
-            LocalCache.putVerificationCodeRequest(orderNo,vc);
+            LocalCache.putVerificationCodeRequest(orderNoLong,vc);
             return orderNo;
         }
         log.info("返回结果解析失败");
@@ -75,7 +76,11 @@ public class QueryServiceImpl implements QueryService {
     public Integer checkVerificationCode(String orderNo, String code) {
 
         Map<String,String> paramsMap = new HashMap<>();
-        VerificationCodeRequest vc = LocalCache.getVerificatonCodeRequest(orderNo);
+        VerificationCodeRequest vc = LocalCache.getVerificatonCodeRequest(Long.valueOf(orderNo));
+        if(vc==null){
+            log.info("本地缓存不存在该单号，已过期");
+            return 3;
+        }
         paramsMap.put("account", APP_ID);
         paramsMap.put("identifyingCode", code);
         paramsMap.put("orderNo", orderNo);
@@ -114,7 +119,7 @@ public class QueryServiceImpl implements QueryService {
     @Override
     public String queryCardData(String name, String idCard, String bankCard, String mobile, String code, String orderNo) {
         Map<String,String> paramsMap = new HashMap<>();
-        VerificationCodeRequest vc = LocalCache.getVerificatonCodeRequest(orderNo);
+        VerificationCodeRequest vc = LocalCache.getVerificatonCodeRequest(Long.valueOf(orderNo));
         paramsMap.put("account", APP_ID);
         paramsMap.put("bankCard", bankCard);
         paramsMap.put("idCard", idCard);

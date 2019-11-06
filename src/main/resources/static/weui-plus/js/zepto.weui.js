@@ -3729,18 +3729,18 @@ Device/OS Detection
     var oldFnTab = $.fn.tab;
     $.fn.tab = function (options) {
         options = $.extend({defaultIndex: 0, activeClass: 'weui-bar__item_on', onToggle: $.noop}, options);
-        const $tabbarItems = this.find('.weui-tabbar__item, .weui-navbar__item');
-        const $tabBdItems = this.find('.weui-tab__content');
+        var $tabbarItems = this.find('.weui-tabbar__item, .weui-navbar__item');
+        var $tabBdItems = this.find('.weui-tab__content');
         this.toggle = function (index) {
-            const $defaultTabbarItem = $tabbarItems.eq(index);
+            var $defaultTabbarItem = $tabbarItems.eq(index);
             $defaultTabbarItem.addClass(options.activeClass).siblings().removeClass(options.activeClass);
-            const $defaultTabBdItem = $tabBdItems.eq(index);
+            var $defaultTabBdItem = $tabBdItems.eq(index);
             $defaultTabBdItem.show().siblings().hide();
             options.onToggle(index);
         };
-        const self = this;
+        var self = this;
         this.on('click', '.weui-tabbar__item, .weui-navbar__item', function (e) {
-            const index = $(this).index();
+            var index = $(this).index();
             self.toggle(index);
         });
         this.toggle(options.defaultIndex);

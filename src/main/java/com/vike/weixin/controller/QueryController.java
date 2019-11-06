@@ -1,6 +1,7 @@
 package com.vike.weixin.controller;
 
 import com.vike.weixin.service.QueryService;
+import com.vike.weixin.vo.PrepayVo;
 import com.vike.weixin.vo.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class QueryController {
 
     /**创建查询订单*/
     @PostMapping("check")
-    public Response check(@RequestParam String orderNo, @RequestParam String code){
+    public Response<PrepayVo> check(@RequestParam String orderNo, @RequestParam String code){
         int status = queryService.checkVerificationCode(orderNo, code);
         String msg;
         switch (status){
@@ -50,7 +51,8 @@ public class QueryController {
             default:
                 msg = "系统维护中，请稍后再试";
         }
-        return new Response(status, msg);
+        PrepayVo prepayVo = new PrepayVo();
+        return new Response<>(status, msg, prepayVo);
     }
 
     @PostMapping("summit")
@@ -71,9 +73,10 @@ public class QueryController {
     //TODO 下单
 
     /**查询支付结果*/
-    //TODO 十秒内多次查询
 
     /**验证通过，查询并返回查询结果*/
 
     /**全部查询结果*/
+
+
 }

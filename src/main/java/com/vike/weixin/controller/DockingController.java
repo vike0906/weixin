@@ -116,6 +116,7 @@ public class DockingController {
         return AccessTokenSync.getAccessToken();
     }
 
-    /**获取用户基础信息*/
+    /**微信支付回调通知*/
+
 
 }

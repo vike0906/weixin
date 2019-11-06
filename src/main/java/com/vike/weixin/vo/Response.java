@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Response {
+public class Response<T> {
 
     public static final int SUCCESS = 0;
 
@@ -21,5 +21,12 @@ public class Response {
 
     private Integer code;
 
-    private String data;
+    private String message;
+
+    private T data;
+
+    public Response(Integer code, String msg){
+        this.code = code;
+        this.message = msg;
+    }
 }
